@@ -1,16 +1,21 @@
 "use client";
 
 import { useDeferredValue, useMemo, useState } from "react";
-import {
-  calculateIgv,
-  parseAmount,
-  type IgvMode,
-} from "@/lib/igv";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
+import {
+  CALCULATOR_RESULT_ERROR_ID,
+  calculatorFormCardClassName,
+  calculatorInputClassName,
+  calculatorLabelClassName,
+} from "@/components/calculator-ui";
 import { ModeTabs } from "@/components/ModeTabs";
 import { ResultCard } from "@/components/ResultCard";
+import { calculateIgv, type IgvMode } from "@/lib/igv";
+import { parseNonNegativeAmount as parseAmount } from "@/lib/parse";
 
-function validationMessage(error: ReturnType<typeof parseAmount>): string | null {
+function validationMessage(
+  error: ReturnType<typeof parseAmount>,
+): string | null {
   if (error.ok) return null;
   switch (error.error) {
     case "empty":
@@ -52,13 +57,13 @@ export function CalculatorForm() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
+      <div className={calculatorFormCardClassName}>
         <ModeTabs mode={mode} onModeChange={setMode} />
 
         <div className="mt-6">
           <label
             htmlFor="amount"
-            className="mb-2 block text-sm font-medium text-slate-800 dark:text-slate-200"
+            className={calculatorLabelClassName}
           >
             Monto (S/)
           </label>
@@ -71,9 +76,11 @@ export function CalculatorForm() {
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-lg tabular-nums text-slate-900 shadow-sm outline-none ring-indigo-500/0 transition placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+            className={calculatorInputClassName}
             aria-invalid={Boolean(errorMessage)}
-            aria-describedby={errorMessage ? "amount-error" : undefined}
+            aria-describedby={
+              errorMessage ? CALCULATOR_RESULT_ERROR_ID : undefined
+            }
           />
         </div>
       </div>

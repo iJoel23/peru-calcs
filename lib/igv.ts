@@ -1,3 +1,5 @@
+import { formatPen as formatPenAmount } from "@/lib/format";
+
 /** IGV general rate in Peru (18%). */
 export const IGV_RATE = 0.18;
 
@@ -39,47 +41,19 @@ export function calculateIgv(mode: IgvMode, amount: number): IgvResult {
   }
 }
 
-export type ParseAmountError = "empty" | "invalid" | "negative";
+export type ParseAmountError = import("@/lib/parse").ParseNonNegativeError;
 
-export type ParseAmountResult =
-  | { ok: true; value: number }
-  | { ok: false; error: ParseAmountError };
+export type ParseAmountResult = import("@/lib/parse").ParseNonNegativeResult;
 
-/**
- * Parses a user-entered amount. Accepts comma or dot as decimal separator.
- */
-export function parseAmount(raw: string): ParseAmountResult {
-  const trimmed = raw.trim();
-  if (trimmed === "") {
-    return { ok: false, error: "empty" };
-  }
+export { parseNonNegativeAmount as parseAmount } from "@/lib/parse";
 
-  const normalized = trimmed.replace(/\s/g, "").replace(",", ".");
-  const value = Number(normalized);
-
-  if (Number.isNaN(value) || !Number.isFinite(value)) {
-    return { ok: false, error: "invalid" };
-  }
-
-  if (value < 0) {
-    return { ok: false, error: "negative" };
-  }
-
-  return { ok: true, value };
-}
-
-export function formatPen(value: number): string {
-  return new Intl.NumberFormat("es-PE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
+export { formatPen } from "@/lib/format";
 
 export function formatResultsForCopy(result: IgvResult): string {
   const lines = [
-    `Subtotal / Base: S/ ${formatPen(result.base)}`,
-    `IGV (18%): S/ ${formatPen(result.igv)}`,
-    `Total: S/ ${formatPen(result.total)}`,
+    `Subtotal / Base: S/ ${formatPenAmount(result.base)}`,
+    `IGV (18%): S/ ${formatPenAmount(result.igv)}`,
+    `Total: S/ ${formatPenAmount(result.total)}`,
   ];
   return lines.join("\n");
 }
