@@ -1,5 +1,3 @@
-import { formatPen as formatPenAmount } from "@/lib/format";
-
 /** IGV general rate in Peru (18%). */
 export const IGV_RATE = 0.18;
 
@@ -50,10 +48,11 @@ export { parseNonNegativeAmount as parseAmount } from "@/lib/parse";
 export { formatPen } from "@/lib/format";
 
 export function formatResultsForCopy(result: IgvResult): string {
+  const { formatPen: fp } = require("@/lib/format") as typeof import("@/lib/format");
   const lines = [
-    `Subtotal / Base: S/ ${formatPenAmount(result.base)}`,
-    `IGV (18%): S/ ${formatPenAmount(result.igv)}`,
-    `Total: S/ ${formatPenAmount(result.total)}`,
+    `Subtotal / Base: S/ ${fp(result.base)}`,
+    `IGV (18%): S/ ${fp(result.igv)}`,
+    `Total: S/ ${fp(result.total)}`,
   ];
   return lines.join("\n");
 }
